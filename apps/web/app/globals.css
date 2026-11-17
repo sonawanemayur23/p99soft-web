@@ -1,0 +1,140 @@
+/* filepath: apps/web/app/globals.css */
+@import "tailwindcss";
+
+/* P99soft tokens. Source: P99 Visual Identity Guidelines.
+   Ink is sampled from the logo wordmark (#0C1D21). */
+@theme {
+  --color-ink: #0c1d21;
+  --color-ink-2: #15292e;
+  --color-slate: #365a63;
+  --color-muted: #557178;
+  --color-sky: #51c5e0;
+  --color-growth: #6fcb8f;
+  --color-sky-soft: #8edff2;
+  --color-mint: #a7e2be;
+  --color-sand: #f4ebdc;
+  --color-mist: #f2f6f7;
+  --color-line: #dbe5e7;
+  --color-line-dark: #24393e;
+
+  --font-display: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-data: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    @apply bg-white font-sans text-ink;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: var(--color-mint);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-sky);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  /* Type scale: a 1.25 ratio from a 17px base, with display sizes fluid. */
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.75rem, 6vw, 5.75rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+  .t-h1 {
+    font-weight: 800;
+    font-size: clamp(2.5rem, 5.6vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .t-h2 {
+    font-weight: 750;
+    font-size: clamp(2rem, 4.2vw, 3.75rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+  .t-h3 {
+    font-weight: 700;
+    font-size: clamp(1.375rem, 2vw, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .t-lead {
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  .t-data {
+    font-family: var(--font-data);
+    font-feature-settings: "tnum", "cv01";
+    letter-spacing: 0;
+  }
+  .container-x {
+    width: 100%;
+    max-width: 82rem;
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+  }
+  .brand-gradient {
+    background-image: linear-gradient(150deg, var(--color-growth) 0%, var(--color-sky) 100%);
+  }
+  .brand-gradient-text {
+    background-image: linear-gradient(150deg, var(--color-growth) 0%, var(--color-sky) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .prose-p99 {
+    @apply text-ink;
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+  .prose-p99 > * + * { margin-top: 1.25em; }
+  .prose-p99 h2 { font-weight: 700; font-size: clamp(1.375rem, 2vw, 1.75rem); line-height: 1.2; letter-spacing: -0.02em; margin-top: 2.25em; }
+  .prose-p99 h3 { font-weight: 700; font-size: 1.25rem; margin-top: 1.75em; }
+  .prose-p99 a { @apply underline decoration-sky decoration-2 underline-offset-4; }
+  .prose-p99 strong { font-weight: 700; }
+  .prose-p99 ul, .prose-p99 ol { padding-left: 1.25em; }
+  .prose-p99 ul { list-style: none; }
+  .prose-p99 ul > li { position: relative; }
+  .prose-p99 ul > li::before {
+    content: ""; position: absolute; left: -1.1em; top: 0.7em;
+    width: 0.45em; height: 0.45em; border-radius: 2px;
+    background: linear-gradient(150deg, var(--color-growth), var(--color-sky));
+    transform: rotate(45deg);
+  }
+  .prose-p99 ol { list-style: decimal; }
+  .prose-p99 ol > li::marker { font-family: var(--font-data); color: var(--color-slate); font-weight: 600; }
+  .prose-p99 li + li { margin-top: 0.5em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }

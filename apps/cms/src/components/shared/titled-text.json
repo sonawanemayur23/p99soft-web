@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_shared_titled_text",
+  "info": {
+    "displayName": "Titled text",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_home_era",
+  "info": {
+    "displayName": "Era",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "when": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

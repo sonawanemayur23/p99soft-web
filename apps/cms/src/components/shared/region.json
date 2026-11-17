@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_shared_region",
+  "info": {
+    "displayName": "Region",
+    "icon": "earth"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

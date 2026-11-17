@@ -1,0 +1,11 @@
+# apps/cms (Strapi) is installed with npm on its own: its admin ships React 18,
+# the web app runs React 19. Keeping it out of the workspace avoids hoisting clashes.
+packages:
+  - "apps/web"
+  - "apps/bff"
+  - "packages/*"
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  "@tailwindcss/oxide": true

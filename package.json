@@ -1,0 +1,17 @@
+{
+  "name": "p99soft-web",
+  "private": true,
+  "packageManager": "pnpm@12.21.0",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "dev:cms": "npm --prefix apps/cms run develop",
+    "seed:cms": "npm --prefix apps/cms run seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.7.0"
+  }
+}

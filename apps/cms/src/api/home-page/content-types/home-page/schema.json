@@ -1,0 +1,149 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_pages",
+  "info": {
+    "singularName": "home-page",
+    "pluralName": "home-pages",
+    "displayName": "Home page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "seo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false,
+      "required": true
+    },
+    "heroHeadline": {
+      "type": "string",
+      "required": true
+    },
+    "heroSubhead": {
+      "type": "text",
+      "required": true
+    },
+    "heroPrimaryCta": {
+      "type": "component",
+      "component": "shared.cta",
+      "repeatable": false,
+      "required": true
+    },
+    "heroSecondaryCta": {
+      "type": "component",
+      "component": "shared.cta",
+      "repeatable": false,
+      "required": true
+    },
+    "heroSystems": {
+      "type": "component",
+      "component": "shared.text-item",
+      "repeatable": true
+    },
+    "shiftTitle": {
+      "type": "string",
+      "required": true
+    },
+    "shiftIntro": {
+      "type": "text",
+      "required": true
+    },
+    "eras": {
+      "type": "component",
+      "component": "home.era",
+      "repeatable": true
+    },
+    "stackTitle": {
+      "type": "string",
+      "required": true
+    },
+    "stackIntro": {
+      "type": "text",
+      "required": true
+    },
+    "playbookTitle": {
+      "type": "string",
+      "required": true
+    },
+    "playbookIntro": {
+      "type": "text",
+      "required": true
+    },
+    "playbookSteps": {
+      "type": "component",
+      "component": "shared.titled-text",
+      "repeatable": true
+    },
+    "industriesTitle": {
+      "type": "string",
+      "required": true
+    },
+    "industriesIntro": {
+      "type": "text",
+      "required": true
+    },
+    "industriesNote": {
+      "type": "string"
+    },
+    "fitTitle": {
+      "type": "string",
+      "required": true
+    },
+    "fitIntro": {
+      "type": "text",
+      "required": true
+    },
+    "fitCriteria": {
+      "type": "component",
+      "component": "home.criterion",
+      "repeatable": true
+    },
+    "fitStrong": {
+      "type": "text",
+      "required": true
+    },
+    "fitPartial": {
+      "type": "text",
+      "required": true
+    },
+    "fitLow": {
+      "type": "text",
+      "required": true
+    },
+    "fitCta": {
+      "type": "component",
+      "component": "shared.cta",
+      "repeatable": false,
+      "required": true
+    },
+    "principlesTitle": {
+      "type": "string",
+      "required": true
+    },
+    "principles": {
+      "type": "component",
+      "component": "shared.titled-text",
+      "repeatable": true
+    },
+    "insightsTitle": {
+      "type": "string",
+      "required": true
+    },
+    "finalTitle": {
+      "type": "string",
+      "required": true
+    },
+    "finalBody": {
+      "type": "text",
+      "required": true
+    },
+    "finalCta": {
+      "type": "component",
+      "component": "shared.cta",
+      "repeatable": false,
+      "required": true
+    }
+  }
+}
