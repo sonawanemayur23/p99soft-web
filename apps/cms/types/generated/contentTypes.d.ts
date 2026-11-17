@@ -539,7 +539,6 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     primaryCta: Schema.Attribute.Component<'shared.cta', false> &
       Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    regions: Schema.Attribute.Component<'shared.region', true>;
     siteName: Schema.Attribute.String & Schema.Attribute.Required;
     siteUrl: Schema.Attribute.String & Schema.Attribute.Required;
     social: Schema.Attribute.Component<'shared.cta', true>;
@@ -561,6 +560,7 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    certifications: Schema.Attribute.Component<'shared.titled-text', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -569,17 +569,10 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     finalCta: Schema.Attribute.Component<'shared.cta', false> &
       Schema.Attribute.Required;
     finalTitle: Schema.Attribute.String & Schema.Attribute.Required;
-    fitCriteria: Schema.Attribute.Component<'home.criterion', true>;
-    fitCta: Schema.Attribute.Component<'shared.cta', false> &
-      Schema.Attribute.Required;
-    fitIntro: Schema.Attribute.Text & Schema.Attribute.Required;
-    fitLow: Schema.Attribute.Text & Schema.Attribute.Required;
-    fitPartial: Schema.Attribute.Text & Schema.Attribute.Required;
-    fitStrong: Schema.Attribute.Text & Schema.Attribute.Required;
-    fitTitle: Schema.Attribute.String & Schema.Attribute.Required;
     heroHeadline: Schema.Attribute.String & Schema.Attribute.Required;
     heroPrimaryCta: Schema.Attribute.Component<'shared.cta', false> &
       Schema.Attribute.Required;
+    heroProof: Schema.Attribute.Component<'shared.stat', true>;
     heroSecondaryCta: Schema.Attribute.Component<'shared.cta', false> &
       Schema.Attribute.Required;
     heroSubhead: Schema.Attribute.Text & Schema.Attribute.Required;
@@ -599,6 +592,7 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     playbookTitle: Schema.Attribute.String & Schema.Attribute.Required;
     principles: Schema.Attribute.Component<'shared.titled-text', true>;
     principlesTitle: Schema.Attribute.String & Schema.Attribute.Required;
+    products: Schema.Attribute.Component<'home.product', true>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false> &
       Schema.Attribute.Required;
@@ -606,6 +600,15 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     shiftTitle: Schema.Attribute.String & Schema.Attribute.Required;
     stackIntro: Schema.Attribute.Text & Schema.Attribute.Required;
     stackTitle: Schema.Attribute.String & Schema.Attribute.Required;
+    starterCta: Schema.Attribute.Component<'shared.cta', false> &
+      Schema.Attribute.Required;
+    starterIntro: Schema.Attribute.Text & Schema.Attribute.Required;
+    starterItems: Schema.Attribute.Component<'home.starter-item', true>;
+    starterTitle: Schema.Attribute.String & Schema.Attribute.Required;
+    testimonials: Schema.Attribute.Component<'home.testimonial', true>;
+    testimonialsTitle: Schema.Attribute.String & Schema.Attribute.Required;
+    trustIntro: Schema.Attribute.Text & Schema.Attribute.Required;
+    trustTitle: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -789,6 +792,46 @@ export interface ApiLeadLead extends Struct.CollectionTypeSchema {
     role: Schema.Attribute.String;
     source: Schema.Attribute.String;
     topic: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPagePage extends Struct.CollectionTypeSchema {
+  collectionName: 'pages';
+  info: {
+    displayName: 'Page';
+    pluralName: 'pages';
+    singularName: 'page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    blocks: Schema.Attribute.DynamicZone<
+      [
+        'blocks.hero',
+        'blocks.rich-text',
+        'blocks.feature-grid',
+        'blocks.stats',
+        'blocks.quote',
+        'blocks.faq',
+        'blocks.image',
+        'blocks.cta-band',
+      ]
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::page.page'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false> &
+      Schema.Attribute.Required;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1410,6 +1453,7 @@ declare module '@strapi/strapi' {
       'api::insight.insight': ApiInsightInsight;
       'api::insights-page.insights-page': ApiInsightsPageInsightsPage;
       'api::lead.lead': ApiLeadLead;
+      'api::page.page': ApiPagePage;
       'api::service.service': ApiServiceService;
       'api::services-page.services-page': ApiServicesPageServicesPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;

@@ -15,7 +15,21 @@ describe("BFF without CMS", () => {
     const { res, body } = await get<HomePage>("/v1/pages/home");
     expect(res.status).toBe(200);
     expect(body.source).toBe("fallback");
-    expect(body.data.stack.layers.map((l) => l.code)).toEqual(["L0", "L1", "L2", "L3", "L4", "L5", "L6"]);
+    expect(body.data.stack.layers).toHaveLength(7);
+    expect(body.data.stack.layers[0]?.outcomes.length).toBeGreaterThan(0);
+  });
+
+  it("only keeps starter items that point at a real service", async () => {
+    const { body } = await get<HomePage>("/v1/pages/home");
+    const slugs = new Set(body.data.starter.services.map((s) => s.slug));
+    expect(body.data.starter.items.every((i) => slugs.has(i.serviceSlug))).toBe(true);
+  });
+
+  it("serves page-builder pages and refuses reserved slugs", async () => {
+    const ok = await app.request("/v1/content-pages/our-story");
+    expect(ok.status).toBe(200);
+    const reserved = await app.request("/v1/content-pages/services");
+    expect(reserved.status).toBe(404);
   });
 
   it("returns 404 for an unknown service", async () => {
@@ -29,7 +43,12 @@ describe("SEO rules (Framer audit regressions)", () => {
     const { body: map } = await get<SitemapEntry[]>("/v1/sitemap");
     const seen = new Map<string, string>();
     for (const entry of map.data) {
-      const endpoint = entry.path === "/" ? "/v1/pages/home" : `/v1${entry.path.replace(/^\/contact$/, "/pages/contact")}`;
+      const builtIn = /^\/(services|industries|insights)(\/|$)/.test(entry.path);
+      const endpoint =
+        entry.path === "/" ? "/v1/pages/home"
+        : entry.path === "/contact" ? "/v1/pages/contact"
+        : builtIn ? `/v1${entry.path}`
+        : `/v1/content-pages${entry.path}`;
       const { body } = await get<{ seo: { title: string; description: string; canonicalPath: string } }>(endpoint);
       const seo = body.data.seo;
       expect(seo.canonicalPath, endpoint).toBe(entry.path);
@@ -49,7 +68,7 @@ describe("SEO rules (Framer audit regressions)", () => {
   });
 
   it("attaches Service and Breadcrumb JSON-LD and a generated share image to services", async () => {
-    const { body } = await get<Service>("/v1/services/assistive-and-agentic-ai");
+    const { body } = await get<Service>("/v1/services/generative-and-agentic-ai");
     const types = body.data.seo.jsonLd.map((x) => x["@type"]);
     expect(types).toEqual(["Service", "BreadcrumbList"]);
     expect(body.data.seo.ogImage).toMatch(/^\/og\?title=/);

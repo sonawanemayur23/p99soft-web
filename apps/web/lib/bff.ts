@@ -4,7 +4,7 @@ import "server-only";
 import { notFound } from "next/navigation";
 import type {
   BffEnvelope, ContactPage, HomePage, IndustriesIndex, Industry, Insight, InsightsIndex,
-  Service, ServicesIndex, SiteSettings, SitemapEntry,
+  Page, Service, ServicesIndex, SiteSettings, SitemapEntry,
 } from "@p99/contracts";
 
 const BFF_URL = process.env.BFF_URL ?? "http://localhost:4000";
@@ -23,7 +23,9 @@ async function get<T>(path: string, tags: string[]): Promise<T> {
 }
 
 export const bff = {
-  site: () => get<SiteSettings>("/v1/site", ["site", "services", "industries"]),
+  site: () => get<SiteSettings>("/v1/site", ["site", "services", "industries", "pages"]),
+  pages: () => get<{ slug: string; title: string }[]>("/v1/content-pages", ["pages"]),
+  page: (slug: string) => get<Page>(`/v1/content-pages/${encodeURIComponent(slug)}`, ["pages", `page:${slug}`]),
   home: () => get<HomePage>("/v1/pages/home", ["home", "site", "services", "industries", "insights"]),
   contact: () => get<ContactPage>("/v1/pages/contact", ["contact"]),
   services: () => get<ServicesIndex>("/v1/services", ["services", "services-page"]),
@@ -32,7 +34,7 @@ export const bff = {
   industry: (slug: string) => get<Industry>(`/v1/industries/${encodeURIComponent(slug)}`, ["industries", `industry:${slug}`]),
   insights: () => get<InsightsIndex>("/v1/insights", ["insights", "insights-page"]),
   insight: (slug: string) => get<Insight>(`/v1/insights/${encodeURIComponent(slug)}`, ["insights", `insight:${slug}`]),
-  sitemap: () => get<SitemapEntry[]>("/v1/sitemap", ["sitemap", "services", "industries", "insights"]),
+  sitemap: () => get<SitemapEntry[]>("/v1/sitemap", ["sitemap", "services", "industries", "insights", "pages"]),
 };
 
 export const bffBaseUrl = BFF_URL;

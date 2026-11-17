@@ -3,21 +3,22 @@
 // it joins content across types (home + services + industries + insights),
 // builds navigation from collections, and attaches SEO and JSON-LD.
 import {
-  ContactPage, HomePage, Industry, IndustriesIndex, Insight, InsightsIndex,
+  ContactPage, HomePage, Industry, IndustriesIndex, Insight, InsightsIndex, Page,
   Service, ServicesIndex, SiteSettings, type InsightSummary, type IndustrySummary,
-  type ServiceSummary, type SitemapEntry,
+  type ServiceSummary, type SitemapEntry, type StackLayer,
 } from "@p99/contracts";
 import type {
-  ContactSource, HomeSource, IndexSource, IndustrySource, InsightSource, ServiceSource, SiteSource,
+  ContactSource, HomeSource, IndexSource, IndustrySource, InsightSource, PageSource, ServiceSource, SiteSource,
 } from "./normalize";
 import {
-  articleLd, breadcrumbLd, buildSeo, ogImagePath, organizationLd, serviceLd, websiteLd,
+  articleLd, breadcrumbLd, buildSeo, faqLd, ogImagePath, organizationLd, serviceLd, websiteLd,
 } from "./seo";
 
 const LAYER_ORDER = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"];
 const TIER_ORDER = ["anchor", "adjacent", "selective"];
 
 export const toServiceSummary = (s: ServiceSource): ServiceSummary => ({ code: s.code, slug: s.slug, name: s.name, short: s.short });
+export const toStackLayer = (s: ServiceSource): StackLayer => ({ ...toServiceSummary(s), summary: s.summary, outcomes: s.outcomes.slice(0, 3) });
 export const toIndustrySummary = (i: IndustrySource): IndustrySummary => ({ slug: i.slug, name: i.name, tier: i.tier, short: i.short });
 export const toInsightSummary = (x: InsightSource): InsightSummary => ({
   slug: x.slug, title: x.title, excerpt: x.excerpt, publishedAt: x.publishedAt,
@@ -28,20 +29,30 @@ export const sortServices = (a: ServiceSource[]) => [...a].sort((x, y) => LAYER_
 export const sortIndustries = (a: IndustrySource[]) => [...a].sort((x, y) => TIER_ORDER.indexOf(x.tier) - TIER_ORDER.indexOf(y.tier));
 export const sortInsights = (a: InsightSource[]) => [...a].sort((x, y) => y.publishedAt.localeCompare(x.publishedAt));
 
-export function composeSite(site: SiteSource, services: ServiceSource[], industries: IndustrySource[]): SiteSettings {
+export function composeSite(site: SiteSource, services: ServiceSource[], industries: IndustrySource[], pages: PageSource[] = []): SiteSettings {
   const svc = sortServices(services);
   const ind = sortIndustries(industries);
+  const story = pages.find((p) => p.slug === "our-story");
   return SiteSettings.parse({
     ...site,
     nav: [
-      { label: "Services", href: "/services", children: svc.map((s) => ({ label: s.name, href: `/services/${s.slug}`, note: s.code })) },
+      { label: "Services", href: "/services", children: svc.map((s) => ({ label: s.name, href: `/services/${s.slug}` })) },
       { label: "Industries", href: "/industries", children: ind.map((i) => ({ label: i.name, href: `/industries/${i.slug}` })) },
       { label: "Insights", href: "/insights" },
+      ...(story ? [{ label: "About", href: "/our-story" }] : []),
     ],
     footer: [
       { title: "Services", links: svc.map((s) => ({ label: s.name, href: `/services/${s.slug}` })) },
       { title: "Industries", links: ind.map((i) => ({ label: i.name, href: `/industries/${i.slug}` })) },
-      { title: "Company", links: [{ label: "Insights", href: "/insights" }, { label: "Contact", href: "/contact" }, ...site.social] },
+      {
+        title: "Company",
+        links: [
+          ...(story ? [{ label: "Our story", href: "/our-story" }] : []),
+          { label: "Insights", href: "/insights" },
+          { label: "Contact", href: "/contact" },
+          ...site.social,
+        ],
+      },
     ],
   });
 }
@@ -56,10 +67,17 @@ export function composeHome(h: HomeSource, site: SiteSource, services: ServiceSo
     }),
     hero: h.hero,
     shift: h.shift,
-    stack: { ...h.stack, layers: sortServices(services).map(toServiceSummary) },
+    stack: { ...h.stack, layers: sortServices(services).map(toStackLayer) },
     playbook: h.playbook,
     industries: { ...h.industries, items: sortIndustries(industries).map(toIndustrySummary) },
-    fit: h.fit,
+    starter: {
+      ...h.starter,
+      // Drop any symptom that points at a service that does not exist (e.g. a typo in the CMS).
+      items: h.starter.items.filter((i) => services.some((s) => s.slug === i.serviceSlug)),
+      services: sortServices(services).map(toServiceSummary),
+    },
+    testimonials: h.testimonials,
+    trust: h.trust,
     principles: h.principles,
     insights: { title: h.insightsTitle, items: sortInsights(insights).slice(0, 3).map(toInsightSummary) },
     finalCta: h.finalCta,
@@ -77,7 +95,7 @@ export function composeService(s: ServiceSource): Service {
     seo: buildSeo({
       ...s.seo,
       path,
-      kicker: `Service layer ${s.code}`,
+      kicker: "Services",
       jsonLd: [
         serviceLd({ name: s.name, summary: s.summary, path, code: s.code }),
         breadcrumbLd([{ name: "Home", path: "/" }, { name: "Services", path: "/services" }, { name: s.name, path }]),
@@ -140,7 +158,26 @@ export function composeContact(c: ContactSource): ContactPage {
   });
 }
 
-export function composeSitemap(services: ServiceSource[], industries: IndustrySource[], insights: InsightSource[], today: string): SitemapEntry[] {
+export function composePage(p: PageSource): Page {
+  const path = `/${p.slug}`;
+  const faqs = p.blocks.flatMap((b) => (b.type === "faq" ? b.items.map((i) => ({ q: i.question, a: i.answer })) : []));
+  return Page.parse({
+    slug: p.slug,
+    title: p.title,
+    updatedAt: p.updatedAt ?? new Date().toISOString().slice(0, 10),
+    blocks: p.blocks,
+    seo: buildSeo({
+      ...p.seo,
+      path,
+      jsonLd: [
+        breadcrumbLd([{ name: "Home", path: "/" }, { name: p.title, path }]),
+        ...(faqs.length ? [faqLd(faqs)] : []),
+      ],
+    }),
+  });
+}
+
+export function composeSitemap(services: ServiceSource[], industries: IndustrySource[], insights: InsightSource[], today: string, pages: PageSource[] = []): SitemapEntry[] {
   const fixed: SitemapEntry[] = [
     { path: "/", lastModified: today, priority: 1, changeFrequency: "weekly" },
     { path: "/services", lastModified: today, priority: 0.9, changeFrequency: "monthly" },
@@ -153,5 +190,6 @@ export function composeSitemap(services: ServiceSource[], industries: IndustrySo
     ...services.filter((s) => !s.seo.noIndex).map((s) => ({ path: `/services/${s.slug}`, lastModified: today, priority: 0.9, changeFrequency: "monthly" as const })),
     ...industries.filter((i) => !i.seo.noIndex).map((i) => ({ path: `/industries/${i.slug}`, lastModified: today, priority: 0.8, changeFrequency: "monthly" as const })),
     ...insights.filter((x) => !x.seo.noIndex).map((x) => ({ path: `/insights/${x.slug}`, lastModified: x.updatedAt, priority: 0.6, changeFrequency: "yearly" as const })),
+    ...pages.filter((p) => !p.seo.noIndex).map((p) => ({ path: `/${p.slug}`, lastModified: p.updatedAt ?? today, priority: 0.7, changeFrequency: "monthly" as const })),
   ];
 }

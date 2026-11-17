@@ -4,10 +4,10 @@ import { timingSafeEqual } from "node:crypto";
 import { Hono, type Context } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
-import { LeadInput, type BffEnvelope } from "@p99/contracts";
+import { LeadInput, RESERVED_SLUGS, type BffEnvelope } from "@p99/contracts";
 import {
   composeContact, composeHome, composeIndustriesIndex, composeIndustry, composeInsight,
-  composeInsightsIndex, composeService, composeServicesIndex, composeSitemap, composeSite,
+  composeInsightsIndex, composePage, composeService, composeServicesIndex, composeSitemap, composeSite,
 } from "./compose";
 import { env } from "./env";
 import { cache, repo, tagsForModel, type Sourced } from "./repo";
@@ -35,8 +35,8 @@ app.onError((err, c) => {
 app.get("/health", (c) => c.json({ ok: true, cacheEntries: cache.size, cmsConfigured: Boolean(env.STRAPI_TOKEN) }));
 
 app.get("/v1/site", async (c) => {
-  const [site, services, industries] = await Promise.all([repo.site(), repo.services(), repo.industries()]);
-  return send(c, composeSite(site.value, services.value, industries.value), [site, services, industries]);
+  const [site, services, industries, pages] = await Promise.all([repo.site(), repo.services(), repo.industries(), repo.pages()]);
+  return send(c, composeSite(site.value, services.value, industries.value, pages.value), [site, services, industries, pages]);
 });
 
 app.get("/v1/pages/home", async (c) => {
@@ -78,10 +78,23 @@ app.get("/v1/insights/:slug", async (c) => {
   return send(c, composeInsight(s.value), [s]);
 });
 
+// Page builder pages (About, landing pages, legal pages). Reserved slugs belong to built-in routes.
+app.get("/v1/content-pages", async (c) => {
+  const list = await repo.pages();
+  return send(c, list.value.filter((p) => !(RESERVED_SLUGS as readonly string[]).includes(p.slug)).map((p) => ({ slug: p.slug, title: p.title })), [list]);
+});
+app.get("/v1/content-pages/:slug", async (c) => {
+  const slug = c.req.param("slug");
+  if ((RESERVED_SLUGS as readonly string[]).includes(slug)) return c.json({ error: "not_found" }, 404);
+  const p = await repo.page(slug);
+  return send(c, composePage(p.value), [p]);
+});
+
 app.get("/v1/sitemap", async (c) => {
-  const [s, i, x] = await Promise.all([repo.services(), repo.industries(), repo.insights()]);
+  const [s, i, x, p] = await Promise.all([repo.services(), repo.industries(), repo.insights(), repo.pages()]);
   const today = new Date().toISOString().slice(0, 10);
-  return send(c, composeSitemap(s.value, i.value, x.value, today), [s, i, x]);
+  const pages = p.value.filter((pg) => !(RESERVED_SLUGS as readonly string[]).includes(pg.slug));
+  return send(c, composeSitemap(s.value, i.value, x.value, today, pages), [s, i, x, p]);
 });
 
 // ---------- leads ----------

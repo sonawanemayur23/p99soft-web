@@ -5,10 +5,10 @@ import * as seed from "@p99/content";
 import { TaggedCache } from "./cache";
 import { env } from "./env";
 import {
-  contactFromCms, homeFromCms, indexFromCms, industryFromCms, insightFromCms, populate,
+  contactFromCms, homeFromCms, indexFromCms, industryFromCms, insightFromCms, pageFromCms, populate,
   serviceFromCms, siteFromCms,
   type ContactSource, type Doc, type HomeSource, type IndexSource, type IndustrySource,
-  type InsightSource, type ServiceSource, type SiteSource,
+  type InsightSource, type PageSource, type ServiceSource, type SiteSource,
 } from "./normalize";
 import { CmsNotFoundError, strapi } from "./strapi";
 
@@ -56,6 +56,13 @@ export const repo = {
   insights: () =>
     load<InsightSource[]>("insights", ["insights"], async () => (await strapi.many<Doc>("insights", populate.insight)).map(insightFromCms), () => fromSeed(seed.insights)),
 
+  pages: () =>
+    load<PageSource[]>("pages", ["pages"], async () => (await strapi.many<Doc>("pages", populate.page)).map(pageFromCms), () => fromSeed(seed.pages)),
+
+  page: (slug: string) =>
+    load<PageSource>(`page:${slug}`, ["pages", `page:${slug}`], async () => pageFromCms(await strapi.bySlug<Doc>("pages", slug, populate.page)),
+      () => fromSeed(seed.pages.find((p) => p.slug === slug))),
+
   service: (slug: string) =>
     load<ServiceSource>(`service:${slug}`, ["services", `service:${slug}`], async () => serviceFromCms(await strapi.bySlug<Doc>("services", slug, populate.service)),
       () => fromSeed(seed.services.find((s) => s.slug === slug))),
@@ -81,6 +88,7 @@ export function tagsForModel(model: string, slug?: string): string[] {
     service: ["services", "site", "home", "sitemap", ...(slug ? [`service:${slug}`] : [])],
     industry: ["industries", "site", "home", "sitemap", ...(slug ? [`industry:${slug}`] : [])],
     insight: ["insights", "home", "sitemap", ...(slug ? [`insight:${slug}`] : [])],
+    page: ["pages", "site", "sitemap", ...(slug ? [`page:${slug}`] : [])],
   };
   return map[model] ?? [];
 }

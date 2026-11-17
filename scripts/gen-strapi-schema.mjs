@@ -40,11 +40,6 @@ const components = {
     icon: "layer",
     attributes: { name: { type: "string", required: true }, body: { type: "text", required: true } },
   },
-  "shared/region": {
-    displayName: "Region",
-    icon: "earth",
-    attributes: { name: { type: "string", required: true }, role: { type: "string", required: true } },
-  },
   "home/era": {
     displayName: "Era",
     icon: "clock",
@@ -54,13 +49,104 @@ const components = {
       body: { type: "text", required: true },
     },
   },
-  "home/criterion": {
-    displayName: "Fit criterion",
+  "shared/stat": {
+    displayName: "Stat",
+    icon: "chartBubble",
+    attributes: { value: { type: "string", required: true, maxLength: 20 }, label: { type: "string", required: true } },
+  },
+  "home/starter-item": {
+    displayName: "Starter item",
     icon: "check",
     attributes: {
       key: { type: "string", required: true },
       label: { type: "string", required: true },
-      detail: { type: "string", required: true },
+      serviceSlug: { type: "string", required: true },
+    },
+  },
+  "home/testimonial": {
+    displayName: "Testimonial",
+    icon: "quote",
+    attributes: {
+      quote: { type: "text", required: true },
+      name: { type: "string", required: true },
+      role: { type: "string", required: true },
+    },
+  },
+  "home/product": {
+    displayName: "Product",
+    icon: "rocket",
+    attributes: {
+      name: { type: "string", required: true },
+      body: { type: "string", required: true },
+      href: { type: "string", required: true },
+    },
+  },
+  // ---- page builder blocks ----
+  "blocks/hero": {
+    displayName: "Hero",
+    icon: "landscape",
+    attributes: {
+      heading: { type: "string", required: true },
+      subheading: { type: "text" },
+      primaryCta: { type: "component", component: "shared.cta", repeatable: false },
+      secondaryCta: { type: "component", component: "shared.cta", repeatable: false },
+    },
+  },
+  "blocks/rich-text": {
+    displayName: "Rich text",
+    icon: "feather",
+    attributes: { body: { type: "richtext", required: true } },
+  },
+  "blocks/feature-grid": {
+    displayName: "Feature grid",
+    icon: "apps",
+    attributes: {
+      heading: { type: "string", required: true },
+      intro: { type: "text" },
+      items: { type: "component", component: "shared.titled-text", repeatable: true },
+    },
+  },
+  "blocks/stats": {
+    displayName: "Stats",
+    icon: "chartBubble",
+    attributes: {
+      heading: { type: "string" },
+      items: { type: "component", component: "shared.stat", repeatable: true },
+    },
+  },
+  "blocks/quote": {
+    displayName: "Quote",
+    icon: "quote",
+    attributes: {
+      quote: { type: "text", required: true },
+      name: { type: "string", required: true },
+      role: { type: "string" },
+    },
+  },
+  "blocks/faq": {
+    displayName: "FAQ",
+    icon: "question",
+    attributes: {
+      heading: { type: "string", required: true },
+      items: { type: "component", component: "shared.titled-text", repeatable: true },
+    },
+  },
+  "blocks/image": {
+    displayName: "Image",
+    icon: "picture",
+    attributes: {
+      image: { type: "media", multiple: false, required: true, allowedTypes: ["images"] },
+      alt: { type: "string", required: true },
+      caption: { type: "string" },
+    },
+  },
+  "blocks/cta-band": {
+    displayName: "Call to action",
+    icon: "cursor",
+    attributes: {
+      heading: { type: "string", required: true },
+      body: { type: "text" },
+      cta: { type: "component", component: "shared.cta", repeatable: false, required: true },
     },
   },
 };
@@ -92,7 +178,6 @@ const types = {
       tagline: { type: "string", required: true },
       description: { type: "text", required: true },
       contactEmail: { type: "email", required: true },
-      regions: rep("shared.region"),
       offices: rep("shared.text-item"),
       primaryCta: cta,
       social: rep("shared.cta"),
@@ -111,6 +196,7 @@ const types = {
       heroPrimaryCta: cta,
       heroSecondaryCta: cta,
       heroSystems: rep("shared.text-item"),
+      heroProof: rep("shared.stat"),
       shiftTitle: { type: "string", required: true },
       shiftIntro: { type: "text", required: true },
       eras: rep("home.era"),
@@ -122,13 +208,16 @@ const types = {
       industriesTitle: { type: "string", required: true },
       industriesIntro: { type: "text", required: true },
       industriesNote: { type: "string" },
-      fitTitle: { type: "string", required: true },
-      fitIntro: { type: "text", required: true },
-      fitCriteria: rep("home.criterion"),
-      fitStrong: { type: "text", required: true },
-      fitPartial: { type: "text", required: true },
-      fitLow: { type: "text", required: true },
-      fitCta: cta,
+      starterTitle: { type: "string", required: true },
+      starterIntro: { type: "text", required: true },
+      starterItems: rep("home.starter-item"),
+      starterCta: cta,
+      testimonialsTitle: { type: "string", required: true },
+      testimonials: rep("home.testimonial"),
+      trustTitle: { type: "string", required: true },
+      trustIntro: { type: "text", required: true },
+      certifications: rep("shared.titled-text"),
+      products: rep("home.product"),
       principlesTitle: { type: "string", required: true },
       principles: rep("shared.titled-text"),
       insightsTitle: { type: "string", required: true },
@@ -210,6 +299,24 @@ const types = {
       tags: { type: "json" },
       publishedDate: { type: "date", required: true },
       seo,
+    },
+  },
+  page: {
+    kind: "collectionType",
+    displayName: "Page",
+    pluralName: "pages",
+    draftAndPublish: true,
+    attributes: {
+      title: { type: "string", required: true },
+      slug: { type: "uid", targetField: "title", required: true },
+      seo,
+      blocks: {
+        type: "dynamiczone",
+        components: [
+          "blocks.hero", "blocks.rich-text", "blocks.feature-grid", "blocks.stats",
+          "blocks.quote", "blocks.faq", "blocks.image", "blocks.cta-band",
+        ],
+      },
     },
   },
   lead: {

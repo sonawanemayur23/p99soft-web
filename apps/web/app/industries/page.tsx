@@ -7,8 +7,6 @@ import { JsonLd } from "@/components/site/JsonLd";
 import { PageHero } from "@/components/page/PageHero";
 import { BrandArrow } from "@/components/site/Logo";
 
-const TIER = { anchor: "Our anchor industry", adjacent: "Adjacent", selective: "Selective" } as const;
-
 export async function generateMetadata(): Promise<Metadata> {
   return toMetadata((await bff.industries()).seo);
 }
@@ -25,9 +23,8 @@ export default async function IndustriesIndexPage() {
             {page.items.map((i) => (
               <li key={i.slug}>
                 <Link href={`/industries/${i.slug}`} className="group grid items-baseline gap-3 border-b border-line py-8 lg:grid-cols-12 lg:gap-8 lg:py-10">
-                  <span className="t-data text-sm font-semibold text-muted lg:col-span-2">{TIER[i.tier]}</span>
-                  <h2 className="t-h3 lg:col-span-4">{i.name}</h2>
-                  <p className="text-slate lg:col-span-5">{i.short}</p>
+                  <h2 className="t-h3 lg:col-span-5">{i.name}</h2>
+                  <p className="text-slate lg:col-span-6">{i.short}</p>
                   <BrandArrow className="hidden h-5 justify-self-end transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:translate-x-2 lg:col-span-1 lg:block" />
                 </Link>
               </li>

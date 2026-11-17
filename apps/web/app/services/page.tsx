@@ -23,9 +23,8 @@ export default async function ServicesIndexPage() {
             {page.items.map((s) => (
               <li key={s.code}>
                 <Link href={`/services/${s.slug}`} className="group grid items-baseline gap-3 border-b border-line py-8 lg:grid-cols-12 lg:gap-8 lg:py-10">
-                  <span className="t-data text-lg font-semibold text-muted transition-colors group-hover:text-sky lg:col-span-1">{s.code}</span>
                   <h2 className="t-h3 lg:col-span-5">{s.name}</h2>
-                  <p className="text-slate lg:col-span-5">{s.short}</p>
+                  <p className="text-slate lg:col-span-6">{s.short}</p>
                   <BrandArrow className="hidden h-5 justify-self-end transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:translate-x-2 lg:col-span-1 lg:block" />
                 </Link>
               </li>

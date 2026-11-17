@@ -40,7 +40,6 @@ export const SiteSettings = z.object({
   tagline: z.string(),
   description: z.string(),
   contactEmail: z.string().email(),
-  regions: z.array(z.object({ name: z.string(), role: z.string() })),
   offices: z.array(z.string()),
   nav: z.array(NavItem),
   primaryCta: Cta,
@@ -60,6 +59,12 @@ export const ServiceSummary = z.object({
   short: z.string(),
 });
 export type ServiceSummary = z.infer<typeof ServiceSummary>;
+
+export const StackLayer = ServiceSummary.extend({
+  summary: z.string(),
+  outcomes: z.array(z.string()),
+});
+export type StackLayer = z.infer<typeof StackLayer>;
 
 export const Service = ServiceSummary.extend({
   summary: z.string(),
@@ -105,6 +110,9 @@ export const Insight = InsightSummary.extend({
 });
 export type Insight = z.infer<typeof Insight>;
 
+export const Testimonial = z.object({ quote: z.string(), name: z.string(), role: z.string() });
+export type Testimonial = z.infer<typeof Testimonial>;
+
 export const HomePage = z.object({
   seo: Seo,
   hero: z.object({
@@ -113,6 +121,7 @@ export const HomePage = z.object({
     primaryCta: Cta,
     secondaryCta: Cta,
     systems: z.array(z.string()).min(4).max(10),
+    proof: z.array(z.object({ value: z.string(), label: z.string() })).max(4),
   }),
   shift: z.object({
     title: z.string(),
@@ -122,7 +131,7 @@ export const HomePage = z.object({
   stack: z.object({
     title: z.string(),
     intro: z.string(),
-    layers: z.array(ServiceSummary).length(7),
+    layers: z.array(StackLayer).min(1),
   }),
   playbook: z.object({
     title: z.string(),
@@ -135,12 +144,20 @@ export const HomePage = z.object({
     items: z.array(IndustrySummary),
     note: z.string(),
   }),
-  fit: z.object({
+  /** "Where to start": visitors tick symptoms, we point them to the right service. */
+  starter: z.object({
     title: z.string(),
     intro: z.string(),
-    criteria: z.array(z.object({ id: z.string(), label: z.string(), detail: z.string() })),
-    results: z.object({ strong: z.string(), partial: z.string(), low: z.string() }),
+    items: z.array(z.object({ id: z.string(), label: z.string(), serviceSlug: z.string() })),
+    services: z.array(ServiceSummary),
     cta: Cta,
+  }),
+  testimonials: z.object({ title: z.string(), items: z.array(Testimonial) }),
+  trust: z.object({
+    title: z.string(),
+    intro: z.string(),
+    certifications: z.array(z.object({ name: z.string(), detail: z.string() })),
+    products: z.array(z.object({ name: z.string(), body: z.string(), href: z.string() })),
   }),
   principles: z.object({
     title: z.string(),
@@ -159,6 +176,31 @@ export const IndustriesIndex = IndexPage(IndustrySummary);
 export type IndustriesIndex = z.infer<typeof IndustriesIndex>;
 export const InsightsIndex = IndexPage(InsightSummary);
 export type InsightsIndex = z.infer<typeof InsightsIndex>;
+
+// ---------- Page builder ----------
+export const Block = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("hero"), heading: z.string(), subheading: z.string().optional(), primaryCta: Cta.optional(), secondaryCta: Cta.optional() }),
+  z.object({ type: z.literal("richText"), body: z.string() }),
+  z.object({ type: z.literal("featureGrid"), heading: z.string(), intro: z.string().optional(), items: z.array(z.object({ name: z.string(), body: z.string() })) }),
+  z.object({ type: z.literal("stats"), heading: z.string().optional(), items: z.array(z.object({ value: z.string(), label: z.string() })) }),
+  z.object({ type: z.literal("quote"), quote: z.string(), name: z.string(), role: z.string().optional() }),
+  z.object({ type: z.literal("faq"), heading: z.string(), items: z.array(z.object({ question: z.string(), answer: z.string() })) }),
+  z.object({ type: z.literal("image"), url: z.string(), alt: z.string(), caption: z.string().optional(), width: z.number().optional(), height: z.number().optional() }),
+  z.object({ type: z.literal("ctaBand"), heading: z.string(), body: z.string().optional(), cta: Cta }),
+]);
+export type Block = z.infer<typeof Block>;
+
+export const Page = z.object({
+  slug: z.string(),
+  title: z.string(),
+  updatedAt: z.string(),
+  seo: Seo,
+  blocks: z.array(Block),
+});
+export type Page = z.infer<typeof Page>;
+
+/** Slugs a CMS page may never take, because a built-in route owns them. */
+export const RESERVED_SLUGS = ["services", "industries", "insights", "contact", "api", "og", "sitemap.xml", "robots.txt", "_next"] as const;
 
 export const ContactPage = z.object({
   seo: Seo,

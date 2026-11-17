@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_home_starter_item",
+  "info": {
+    "displayName": "Starter item",
+    "icon": "check"
+  },
+  "options": {},
+  "attributes": {
+    "key": {
+      "type": "string",
+      "required": true
+    },
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "serviceSlug": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

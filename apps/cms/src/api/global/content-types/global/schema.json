@@ -31,11 +31,6 @@
       "type": "email",
       "required": true
     },
-    "regions": {
-      "type": "component",
-      "component": "shared.region",
-      "repeatable": true
-    },
     "offices": {
       "type": "component",
       "component": "shared.text-item",

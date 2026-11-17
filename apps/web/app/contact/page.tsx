@@ -30,14 +30,17 @@ export default async function ContactPage() {
               <a href={`mailto:${site.contactEmail}`} className="mt-2 block text-lg font-semibold underline decoration-line underline-offset-4 hover:decoration-sky">{site.contactEmail}</a>
             </div>
             <div>
-              <h2 className="t-data text-sm font-semibold text-muted">Where we work</h2>
+              <h2 className="t-data text-sm font-semibold text-muted">Offices</h2>
               <ul className="mt-3 space-y-3">
-                {site.regions.map((r) => (
-                  <li key={r.name}>
-                    <p className="font-semibold">{r.name}</p>
-                    <p className="text-sm text-slate">{r.role}</p>
-                  </li>
-                ))}
+                {site.offices.map((o) => {
+                  const [city, address] = o.split(": ");
+                  return (
+                    <li key={o}>
+                      <p className="font-semibold">{city}</p>
+                      {address && <p className="text-sm text-slate">{address}</p>}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </aside>

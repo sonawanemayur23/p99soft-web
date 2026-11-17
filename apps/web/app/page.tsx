@@ -9,7 +9,9 @@ import { Shift } from "@/components/home/Shift";
 import { Stack } from "@/components/home/Stack";
 import { Playbook } from "@/components/home/Playbook";
 import { Industries } from "@/components/home/Industries";
-import { FitCheck } from "@/components/home/FitCheck";
+import { Starter } from "@/components/home/Starter";
+import { Testimonials } from "@/components/home/Testimonials";
+import { Trust } from "@/components/home/Trust";
 import { Principles } from "@/components/home/Principles";
 import { InsightsList } from "@/components/home/InsightsList";
 import { FinalCta } from "@/components/home/FinalCta";
@@ -28,7 +30,9 @@ export default async function HomePage() {
       <Stack stack={home.stack} />
       <Playbook playbook={home.playbook} />
       <Industries industries={home.industries} />
-      <FitCheck fit={home.fit} />
+      <Starter starter={home.starter} />
+      <Testimonials testimonials={home.testimonials} />
+      <Trust trust={home.trust} />
       <Principles principles={home.principles} />
       <section className="pb-28 lg:pb-40" aria-labelledby="insights-title">
         <div className="container-x">

@@ -40,15 +40,18 @@ export function Footer({ site }: { site: SiteSettings }) {
       </div>
       <div className="border-t border-line-dark">
         <div className="container-x grid gap-6 py-8 text-sm text-white/55 md:grid-cols-12">
-          <ul className="flex flex-wrap gap-x-8 gap-y-2 md:col-span-8">
-            {site.regions.map((r) => (
-              <li key={r.name} title={r.role}>
-                <span className="text-white/85">{r.name}</span>
-              </li>
-            ))}
+          <ul className="flex flex-wrap gap-x-6 gap-y-2 md:col-span-9" aria-label="Offices">
+            {site.offices.map((o) => {
+              const [city, address] = o.split(": ");
+              return (
+                <li key={o} title={address}>
+                  <span className="text-white/85">{city}</span>
+                </li>
+              );
+            })}
           </ul>
-          <p className="md:col-span-4 md:text-right">
-            © {year} {site.name}. {site.offices.join(", ")}.
+          <p className="md:col-span-3 md:text-right">
+            © 2021 to {year} P99SOFT PVT LTD
           </p>
         </div>
       </div>

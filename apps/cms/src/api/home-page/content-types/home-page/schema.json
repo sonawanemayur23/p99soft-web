@@ -42,6 +42,11 @@
       "component": "shared.text-item",
       "repeatable": true
     },
+    "heroProof": {
+      "type": "component",
+      "component": "shared.stat",
+      "repeatable": true
+    },
     "shiftTitle": {
       "type": "string",
       "required": true
@@ -87,36 +92,51 @@
     "industriesNote": {
       "type": "string"
     },
-    "fitTitle": {
+    "starterTitle": {
       "type": "string",
       "required": true
     },
-    "fitIntro": {
+    "starterIntro": {
       "type": "text",
       "required": true
     },
-    "fitCriteria": {
+    "starterItems": {
       "type": "component",
-      "component": "home.criterion",
+      "component": "home.starter-item",
       "repeatable": true
     },
-    "fitStrong": {
-      "type": "text",
-      "required": true
-    },
-    "fitPartial": {
-      "type": "text",
-      "required": true
-    },
-    "fitLow": {
-      "type": "text",
-      "required": true
-    },
-    "fitCta": {
+    "starterCta": {
       "type": "component",
       "component": "shared.cta",
       "repeatable": false,
       "required": true
+    },
+    "testimonialsTitle": {
+      "type": "string",
+      "required": true
+    },
+    "testimonials": {
+      "type": "component",
+      "component": "home.testimonial",
+      "repeatable": true
+    },
+    "trustTitle": {
+      "type": "string",
+      "required": true
+    },
+    "trustIntro": {
+      "type": "text",
+      "required": true
+    },
+    "certifications": {
+      "type": "component",
+      "component": "shared.titled-text",
+      "repeatable": true
+    },
+    "products": {
+      "type": "component",
+      "component": "home.product",
+      "repeatable": true
     },
     "principlesTitle": {
       "type": "string",

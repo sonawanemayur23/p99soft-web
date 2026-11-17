@@ -47,9 +47,9 @@ export default async function IndustryPage({ params }: Props) {
       </Section>
       <Section title="How we deliver it">
         <p className="t-lead text-slate">
-          Every engagement draws on the same seven-layer stack, from advisory to managed operations. We start at the layer where the journey breaks.
+          One team covers strategy, engineering, Salesforce, data, AI, testing and support. We start where the journey breaks, and add only what you need.
         </p>
-        <TextLink href="/services" className="mt-6">See the service stack</TextLink>
+        <TextLink href="/services" className="mt-6">See all services</TextLink>
       </Section>
       <FinalCta title="Start with one journey." body="Tell us which customer journey hurts most. We will map it and show you where to start." cta={site.primaryCta} />
     </>

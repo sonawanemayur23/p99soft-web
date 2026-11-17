@@ -1,8 +1,8 @@
 {
-  "collectionName": "components_shared_region",
+  "collectionName": "components_home_product",
   "info": {
-    "displayName": "Region",
-    "icon": "earth"
+    "displayName": "Product",
+    "icon": "rocket"
   },
   "options": {},
   "attributes": {
@@ -10,7 +10,11 @@
       "type": "string",
       "required": true
     },
-    "role": {
+    "body": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
       "type": "string",
       "required": true
     }

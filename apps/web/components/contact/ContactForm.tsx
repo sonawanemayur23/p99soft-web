@@ -8,12 +8,11 @@ import { BrandArrow } from "@/components/site/Logo";
 
 type Status = { kind: "idle" } | { kind: "sending" } | { kind: "sent" } | { kind: "error"; message: string; fields?: Record<string, string[]> };
 
-const TOPIC_PARAM: Record<string, string> = { diagnostic: "CX and AI diagnostic" };
-
 export function ContactForm({ topics }: { topics: string[] }) {
   const params = useSearchParams();
-  const preset = TOPIC_PARAM[params.get("topic") ?? ""] ?? topics[0];
-  const fit = Number(params.get("fit"));
+  const asked = params.get("topic") ?? "";
+  // Match "Salesforce and CRM" from the starter tool, or any topic named in the link.
+  const preset = topics.find((t) => t.toLowerCase() === asked.toLowerCase()) ?? topics.find((t) => asked && t.toLowerCase().includes(asked.toLowerCase().split(" ")[0]!)) ?? topics[0];
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -24,7 +23,7 @@ export function ContactForm({ topics }: { topics: string[] }) {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, role: data.role || undefined, fitScore: Number.isFinite(fit) && fit > 0 ? fit : undefined }),
+        body: JSON.stringify({ ...data, role: data.role || undefined }),
       });
       if (res.ok) return setStatus({ kind: "sent" });
       const body = (await res.json().catch(() => ({}))) as { message?: string; fields?: Record<string, string[]> };

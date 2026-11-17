@@ -209,7 +209,7 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
 
                 <motion.p
                   className="t-data absolute text-xs font-semibold whitespace-nowrap text-slate sm:text-sm"
-                  style={narrow ? { right: 0, top: arrowCy + arrowW * 0.85 } : { left: arrowTip + 24, top: arrowCy - 30 }}
+                  style={narrow ? { right: 0, top: arrowCy + arrowW * 0.85 } : { left: arrowTip + arrowW * 0.45, top: arrowCy - 32 }}
                   initial={reduce ? false : { opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.7, delay: t(2.95), ease: EASE }}
@@ -222,9 +222,21 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
         </div>
       </div>
 
-      <div className="container-x mt-16 lg:mt-8">
-        <p className="t-data text-sm text-muted">Aligned with Salesforce and Databricks. Neutral on architecture.</p>
-      </div>
+      {hero.proof.length > 0 && (
+        <div className="container-x mt-16 lg:mt-6">
+          <dl className="grid gap-6 border-t border-line pt-8 sm:grid-cols-3">
+            {hero.proof.map((p) => (
+              <div key={p.label}>
+                <dt className="sr-only">{p.label}</dt>
+                <dd>
+                  <span className="block text-2xl font-extrabold tracking-[-0.03em]">{p.value}</span>
+                  <span className="mt-1 block max-w-[28ch] text-[0.95rem] text-slate">{p.label}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
     </section>
   );
 }

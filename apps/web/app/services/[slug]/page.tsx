@@ -9,6 +9,7 @@ import { PageHero } from "@/components/page/PageHero";
 import { Section } from "@/components/page/Section";
 import { ArrowList } from "@/components/page/ArrowList";
 import { FinalCta } from "@/components/home/FinalCta";
+import { BrandArrow } from "@/components/site/Logo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,14 +33,9 @@ export default async function ServicePage({ params }: Props) {
       <JsonLd data={s.seo.jsonLd} />
       <PageHero
         trail={[{ name: "Home", href: "/" }, { name: "Services", href: "/services" }, { name: s.name, href: `/services/${s.slug}` }]}
-        kicker={`Service layer ${s.code}`}
         title={s.name}
         intro={s.summary}
-        aside={
-          <span aria-hidden className="t-data brand-gradient-text text-[11rem] leading-none font-bold tracking-[-0.06em]">
-            {s.code}
-          </span>
-        }
+        aside={<BrandArrow className="w-40" />}
       />
 
       <Section title="The problem">
@@ -61,7 +57,7 @@ export default async function ServicePage({ params }: Props) {
         </dl>
       </Section>
 
-      <Section title="Where it sits in the stack">
+      <Section title="Works well with">
         <ol className="space-y-1.5">
           {all.items.map((l) => (
             <li key={l.code}>
@@ -73,7 +69,6 @@ export default async function ServicePage({ params }: Props) {
                   l.slug === s.slug ? "brand-gradient font-bold text-ink" : "bg-mist text-slate hover:bg-line/60 hover:text-ink",
                 )}
               >
-                <span className="t-data w-7 text-sm font-semibold">{l.code}</span>
                 <span>{l.name}</span>
               </Link>
             </li>

@@ -1,6 +1,8 @@
 # p99soft.com rebuild (POC)
 
-The new p99soft.com: Next.js front end, a Backend for Frontend (BFF), and Strapi as the CMS. It carries the new GTM from the 21 Oct 2026 strategy (AI-enabled customer experience engineering) and fixes every SEO issue found on the Framer site.
+The new p99soft.com: Next.js front end, a Backend for Frontend (BFF), and Strapi as the CMS. It fixes every SEO issue found on the Framer site and lets the marketing team publish pages without engineers.
+
+**For editors:** read [docs/publishing-guide.md](docs/publishing-guide.md) and [docs/roles-and-access.md](docs/roles-and-access.md).
 
 ```
  Browser ──▶ apps/web (Next.js 16) ──▶ apps/bff (Hono) ──▶ apps/cms (Strapi 5)
@@ -26,8 +28,8 @@ Needs Node 22+ and pnpm (`corepack enable`).
 pnpm install
 npm --prefix apps/cms install
 
-# 1. Seed the CMS. This also creates the BFF API token and the publish webhook,
-#    and writes both into apps/bff/.env.
+# 1. Seed the CMS. This also creates the editorial roles, the BFF API token and
+#    the publish webhook, and writes the token and webhook secret into apps/bff/.env.
 cp apps/cms/.env.example apps/cms/.env        # then set real secrets
 pnpm --filter @p99/content export
 pnpm seed:cms
@@ -77,8 +79,21 @@ Also included: `sitemap.xml` and `robots.txt` built from CMS content, server-ren
 ## Content model (Strapi)
 
 - **Single types:** Global, Home page, Contact page, and Services, Industries and Insights index pages
-- **Collections:** Service (L0 to L6), Industry, Insight (markdown body), Lead (contact form submissions)
-- **Shared components:** SEO, CTA, text item, titled text, region, era, fit criterion
+- **Collections:** Service, Industry, Insight (markdown body), Page (page builder), Lead (contact form submissions)
+- **Page builder blocks:** Hero, Rich text, Feature grid, Stats, Quote, FAQ, Image, Call to action
+- **Shared components:** SEO, CTA, stat, text item, titled text
+
+## Roles
+
+The seed creates five roles on top of Super Admin: Marketing Manager, Content Editor, Content Writer, SEO Specialist and Analyst. Field-level rules apply: an SEO Specialist can change only SEO fields, and a Content Writer cannot publish. All of this was tested with real accounts. Details in [docs/roles-and-access.md](docs/roles-and-access.md).
+
+## Content rules
+
+All copy lives in `packages/content/src/seed.ts`, and in the CMS after seeding. It is written for clients, not for us:
+
+- No ICP, target segments, market shares, internal service codes or strategy language.
+- Every number, certification, testimonial and office comes from the current p99soft.com.
+- Service slugs reuse the current p99soft.com URLs where a page exists, so search rankings carry over.
 
 Navigation and the footer are built by the BFF from the Service and Industry collections. Add a service in Strapi and it appears in the menu, footer, sitemap and stack.
 
@@ -98,14 +113,24 @@ The form posts to `/api/leads` on the web app, which forwards to the BFF. The BF
 ## To confirm before launch
 
 - [contact email] `hello@p99soft.com` is a placeholder in `packages/content/src/seed.ts`
-- [offices] Only "Austin, Texas, USA" and "India" are listed. Add city names if we want them public.
-- [diagnostic] The CX and AI diagnostic is the main CTA. Confirm the offer name, scope and duration.
-- [proof] No client names, logos or numbers yet. Add case studies once references are approved.
+- [testimonials] Three quotes are reused from the current site. Confirm they are still approved.
+- [case studies] None yet. Add them as Pages or Insights once clients approve.
+- [legal pages] Terms and privacy policy need to be recreated as Pages, using the approved legal text.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Home page errors after you change the content model | Delete `apps/web/.next` and restart the web app. The dev server caches old BFF responses. |
+| Seed fails with TypeScript errors about `api::...` types | Run `npx strapi ts:generate-types` in `apps/cms`, then seed again. |
+| BFF health shows `cmsConfigured: false` | Run the seed again. It writes `STRAPI_TOKEN` into `apps/bff/.env`. |
+| BFF responses carry `x-content-source: fallback` after a re-seed | The seed rotates the API token. Restart Strapi and the BFF so both pick up the new one. |
+| Publishing in Strapi does not update the site | Check that `REVALIDATE_SECRET` in `apps/web/.env.local` matches `WEB_REVALIDATE_SECRET` in `apps/bff/.env`. |
 
 ## Production next steps
 
-1. **Redirects from Framer URLs.** Map every live URL (`/services/data-ai`, `/blog/*`, `/news-section/*`, `/industries/*`) to its new path with 301s, or we lose existing rankings. This is the biggest SEO risk of the migration.
-2. **Migrate existing blog posts** into the Insight collection with proper SEO fields.
+1. **Migrate existing blog posts** into Insights, keeping their old slugs. The redirect `/blog/:slug` to `/insights/:slug` is already in `apps/web/next.config.ts`.
+2. **Check every old URL** from the Framer sitemap against the new redirects before switching DNS.
 3. **Postgres for Strapi** and S3 (or similar) for media.
 4. **Redis for the BFF cache** once we run more than one BFF instance.
 5. **Draft preview** in Next.js for editors.
