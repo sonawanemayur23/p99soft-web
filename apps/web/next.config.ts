@@ -19,6 +19,7 @@ const config: NextConfig = {
   },
   // Old Framer URLs. Service and bank/logistics industry slugs were kept, so they need no redirect.
   // Migrated blog posts must keep their old slug for /blog/:slug to land on the right insight.
+  // /healthcare-and-life-sciences is not redirected: it is a CMS page that reuses the old URL.
   async redirects() {
     return [
       { source: "/about", destination: "/our-story", permanent: true },
@@ -28,7 +29,6 @@ const config: NextConfig = {
       { source: "/news-section/:slug", destination: "/insights", permanent: true },
       { source: "/industries/enterprise-saas", destination: "/industries", permanent: true },
       { source: "/industries/e-governance", destination: "/industries", permanent: true },
-      { source: "/healthcare-and-life-sciences", destination: "/industries", permanent: true },
     ];
   },
   async headers() {
