@@ -7,8 +7,13 @@ const config: NextConfig = {
   transpilePackages: ["@p99/contracts"],
   typedRoutes: false,
   images: {
+    // Next 16 blocks optimising images from localhost or private IPs. Local Strapi serves
+    // media from localhost:1337, so allow it only when ALLOW_LOCAL_IMAGES=true (local dev).
+    // In production, media should come from S3 or a CDN and this stays off.
+    dangerouslyAllowLocalIP: process.env.ALLOW_LOCAL_IMAGES === "true",
     remotePatterns: [
-      { protocol: "http", hostname: "localhost", port: "1337" },
+      { protocol: "http", hostname: "localhost", port: "1337", pathname: "/uploads/**" },
+      { protocol: "http", hostname: "127.0.0.1", port: "1337", pathname: "/uploads/**" },
       { protocol: "https", hostname: "**.p99soft.com" },
     ],
   },

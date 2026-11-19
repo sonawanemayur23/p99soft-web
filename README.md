@@ -125,6 +125,7 @@ The form posts to `/api/leads` on the web app, which forwards to the BFF. The BF
 | Seed fails with TypeScript errors about `api::...` types | Run `npx strapi ts:generate-types` in `apps/cms`, then seed again. |
 | BFF health shows `cmsConfigured: false` | Run the seed again. It writes `STRAPI_TOKEN` into `apps/bff/.env`. |
 | BFF responses carry `x-content-source: fallback` after a re-seed | The seed rotates the API token. Restart Strapi and the BFF so both pick up the new one. |
+| Images from the CMS show as broken icons locally | Add `ALLOW_LOCAL_IMAGES=true` to `apps/web/.env.local`, delete `apps/web/.next`, restart the web app. Next.js 16 blocks images from localhost unless this is on. |
 | Publishing in Strapi does not update the site | Check that `REVALIDATE_SECRET` in `apps/web/.env.local` matches `WEB_REVALIDATE_SECRET` in `apps/bff/.env`. |
 
 ## Production next steps

@@ -44,8 +44,8 @@ function BlockView({ block: b, first }: { block: Block; first: boolean }) {
     case "richText":
       return (
         <section className="py-12 lg:py-16">
-          <div className="container-x grid lg:grid-cols-12">
-            <div className="max-w-[68ch] lg:col-span-7 lg:col-start-6">
+          <div className="container-x">
+            <div className="max-w-[68ch]">
               <Markdown>{b.body}</Markdown>
             </div>
           </div>
